@@ -1,3 +1,4 @@
-# WebScraper
+# Billboards Dance/Electronic Songs
 
-Grabs Top 10 songs from Billboard's Hot 100 list
+Creates a new playlist with Top 25 songs from 
+"Billboard's Dance/Electronic Songs" list

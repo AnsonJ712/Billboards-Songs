@@ -40,10 +40,6 @@ def get_tracks_from_billboard():
     tracks = []
 
     for song in range(len(songs) / 2):
-        '''
-        artist.append(artists[x].get_text().strip())
-        artist[x] = re.sub("([&]|(Featuring)|\s[x]).*", '', artist[x])
-        '''
         tracks.append(songs[song].get_text().strip())
 
     print "Getting songs from billboards.com"
