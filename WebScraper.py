@@ -35,10 +35,8 @@ def authenticate():
 
 
 def get_tracks_from_billboard():
-    # artists = soup.find_all(class_='chart-row__artist')
     songs = soup.find_all(class_='chart-row__song')
 
-    # artist = []
     tracks = []
 
     for song in range(len(songs) / 2):
@@ -48,6 +46,7 @@ def get_tracks_from_billboard():
         '''
         tracks.append(songs[song].get_text().strip())
 
+    print "Getting songs from billboards.com"
     return tracks
 
 
@@ -57,31 +56,27 @@ def get_playlists():
     for playlist in playlists['items']:
         if playlist['name'] == playlist_name:
             playlist_id = playlist['id']
+            print "Playlist found"
             return playlist_id
-    return None
+
+    print "Playlist does not exist, creating a new playlist"
+    sp.user_playlist_create(user, playlist_name)
+    get_playlists()
 
 
-def create_playlists(playlist_id):
-    if playlist_id is None:
-        sp.user_playlist_create(user, playlist_name)
-        playlist_id = get_playlists()
-
-    return playlist_id
-
-
-def add_songs_to_playlists(songs, playlist_id):
+def add_songs_to_playlists(songs):
     track_id = []
 
     for x in range(len(songs)):
         results = sp.search(q=songs[x], type='track')
         track_id.append(results['tracks']['items'][0]['uri'])
 
-    sp.user_playlist_add_tracks(user, playlist_id, track_id)
-
+    sp.user_playlist_replace_tracks(user, playlist_id, track_id)
+    print "Adding songs to playlist"
 
 if __name__ == "__main__":
     user = authenticate()[0]
     sp = authenticate()[1]
     tracks = get_tracks_from_billboard()
     playlist_id = get_playlists()
-    add_songs_to_playlists(tracks, playlist_id)
+    add_songs_to_playlists(tracks)
