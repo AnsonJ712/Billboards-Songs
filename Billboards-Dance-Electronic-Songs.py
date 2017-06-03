@@ -1,6 +1,9 @@
 import requests
 import sys
+import re
+import pprint
 from bs4 import BeautifulSoup
+from collections import OrderedDict
 
 import spotipy
 import spotipy.util as util
@@ -15,6 +18,9 @@ playlist_name = "Billboards Dance/Electronic Songs"
 
 
 def authenticate():
+    """
+    Grants permission for user to use Spotify's API
+    """
     if len(sys.argv) > 1:
         username = sys.argv[1]
     else:
@@ -33,15 +39,29 @@ def authenticate():
 
 
 def get_tracks_from_billboard():
+    """
+    Collects top dance/electronic song titles from billboards.com
+    """
+    artists = soup.find_all(class_='chart-row__artist')
     songs = soup.find_all(class_='chart-row__song')
-    tracks = []
-    for song in range(len(songs)/2):
-        tracks.append(songs[song].get_text().strip())
+
+    tracks = OrderedDict();
+    for song in range(len(songs)):
+        artist = artists[song].get_text().strip()
+        artist = re.sub("([&]|(Featuring)|\s[x]).*", '', artist)
+        # tracks.append(songs[song].get_text().strip())
+        song = songs[song].get_text().strip()
+        tracks[song] = artist;
     print "Getting songs from billboards.com"
+    # pprint.pprint(tracks)
     return tracks
 
 
 def get_playlists():
+    """
+    Searches for playlist named "Billboards Dance/Electronic Songs"
+    Creates new playlist if not found
+    """
     playlists = sp.user_playlists(user)
     for playlist in playlists['items']:
         if playlist['name'] == playlist_name:
@@ -54,12 +74,28 @@ def get_playlists():
 
 
 def add_songs_to_playlists(playlist_id, songs):
+    """
+    Searches for song titles and adds them to the playlist
+    """
     track_id = []
-    for x in range(len(songs)):
-        results = sp.search(q=songs[x], type='track')
-        track_id.append(results['tracks']['items'][0]['uri'])
+    added_to_playlist = False
     print "Adding songs to playlist"
+    for song, artist in songs.iteritems():
+        results = sp.search(q=song, type='track')
+        for track_name in results['tracks']['items']:
+            for artist_name in track_name['album']['artists']:
+                artist = re.sub("\s$", "", artist)
+                if re.match(artist+'.*', artist_name['name']) is not None:
+                    track_id.append(track_name['uri'])
+                    print song
+                    added_to_playlist = True
+                    break
+                break
+            if added_to_playlist:
+                added_to_playlist = False
+                break
     sp.user_playlist_replace_tracks(user, playlist_id, track_id)
+
 
 if __name__ == "__main__":
     user = authenticate()[0]
@@ -67,3 +103,4 @@ if __name__ == "__main__":
     tracks = get_tracks_from_billboard()
     playlist_id = get_playlists()
     add_songs_to_playlists(playlist_id, tracks)
+    print "Songs added"
