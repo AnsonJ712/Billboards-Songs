@@ -48,10 +48,9 @@ def get_tracks_from_billboard():
     tracks = OrderedDict();
     for song in range(len(songs)):
         artist = artists[song].get_text().strip()
-        artist = re.sub("([&]|(Featuring)|\s[x]).*", '', artist)
-        # tracks.append(songs[song].get_text().strip())
+        artist = re.sub("([&]|(Featuring)|\s[x]|\s$|\sAnd.*).*", '', artist)
         song = songs[song].get_text().strip()
-        tracks[song] = artist;
+        tracks[song] = artist
     print "Getting songs from billboards.com"
     # pprint.pprint(tracks)
     return tracks
@@ -81,16 +80,15 @@ def add_songs_to_playlists(playlist_id, songs):
     added_to_playlist = False
     print "Adding songs to playlist"
     for song, artist in songs.iteritems():
-        results = sp.search(q=song, type='track')
+        artist = re.sub("\s$|(\b\sAnd.*\b)", "", artist)
+        results = sp.search(q=song + " " + artist)
         for track_name in results['tracks']['items']:
             for artist_name in track_name['album']['artists']:
-                artist = re.sub("\s$", "", artist)
+                print artist_name['name']
                 if re.match(artist+'.*', artist_name['name']) is not None:
                     track_id.append(track_name['uri'])
-                    print song
                     added_to_playlist = True
                     break
-                break
             if added_to_playlist:
                 added_to_playlist = False
                 break
