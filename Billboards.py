@@ -9,7 +9,7 @@ import spotipy
 import spotipy.util as util
 
 
-link = "http://www.billboard.com/charts/dance-electronic-songs"
+link = "http://www.billboard.com/charts/dance-electronic-songs/2017-09-09"
 page = requests.get(link)
 soup = BeautifulSoup(page.content, 'html.parser')
 
@@ -48,7 +48,7 @@ def get_tracks_from_billboard():
     tracks = OrderedDict();
     for song in range(len(songs)):
         artist = artists[song].get_text().strip()
-        artist = re.sub("([&]|(Featuring)|\s[x]|\s$|\sAnd.*).*", '', artist)
+        artist = re.sub("([&]|(Featuring)|\s[x]|\s$|\sAnd.*|\sWith.*).*", '', artist)
         song = songs[song].get_text().strip()
         tracks[song] = artist
     print "Getting songs from billboards.com"
@@ -84,8 +84,7 @@ def add_songs_to_playlists(playlist_id, songs):
         results = sp.search(q=song + " " + artist)
         for track_name in results['tracks']['items']:
             for artist_name in track_name['album']['artists']:
-                print artist_name['name']
-                if re.match(artist+'.*', artist_name['name']) is not None:
+                if (re.match(artist+'.*', artist_name['name']) or re.match(artist+'.*', "Italo Brothers")) is not None:
                     track_id.append(track_name['uri'])
                     added_to_playlist = True
                     break
