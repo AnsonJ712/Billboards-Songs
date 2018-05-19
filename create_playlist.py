@@ -1,8 +1,8 @@
 import os
 import sys
 
-from Billboard import Billboard
-from Spotipy import Spotipy
+from billboard import Billboard
+from spotify import Spotify
 
 
 def main():
@@ -27,12 +27,12 @@ def main():
     artists = charts.get_tracks_from_billboard(soup)[0]
     songs = charts.get_tracks_from_billboard(soup)[1]
 
-    spotify = Spotipy(scope)
-    user = spotify.authenticate(scope)[0]
-    sp = spotify.authenticate(scope)[1]
+    spotify = Spotify(scope)
+    user = spotify.authenticate(scope, sys.argv[1])[0]
+    sp = spotify.authenticate(scope, sys.argv[1])[1]
     spotify.add_to_playlist(sp, user, artists, songs, playlist_name)
 
-    print "Done!"
+    print("Done!")
 
 
 if __name__ == "__main__":
