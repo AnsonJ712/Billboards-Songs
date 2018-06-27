@@ -7,8 +7,8 @@ class Billboard:
     def __init__(self, link):
         self.link = link
 
-    def get_page(self, link):
-        return requests.get(link)
+    def get_page(self):
+        return requests.get(self.link)
 
     def parse_page(self, page):
         return BeautifulSoup(page.content, 'html.parser')
