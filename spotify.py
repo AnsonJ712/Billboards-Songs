@@ -9,11 +9,11 @@ class Spotify:
     def __init__(self, scope):
         self.scope = scope
 
-    def authenticate(self, scope, username):
+    def authenticate(self, username):
         """
         Grants permission for user to use Spotify's API
         """
-        token = util.prompt_for_user_token(username, scope)
+        token = util.prompt_for_user_token(username, self.scope)
 
         if token:
             sp = spotipy.Spotify(auth=token)
