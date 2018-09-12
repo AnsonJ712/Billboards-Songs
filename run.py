@@ -24,7 +24,7 @@ def main():
     songs = charts.get_tracks_from_billboard(soup)[1]
     chart_name = charts.get_tracks_from_billboard(soup)[2]
 
-    playlist_name = "Billboard " + chart_name.get_text().title()
+    playlist_name = "Billboard " + chart_name.get_text().title().strip('\n')
 
     spotify = Spotify(scope)
     user = spotify.authenticate(ACCOUNT)[0]

@@ -30,7 +30,7 @@ class Spotify:
         for song in range(len(songs)):
             temp = artists[song].get_text().strip()
             artist = temp.replace("'", "")
-            artist = re.sub(r"([,*]|\s([X&+x]|(Featuring)|(With)|(And))).*",
+            artist = re.sub(r"([,*]|\s([X&+x]|(Featuring)|(With)|(And)|(vs))).*",
                 '',
                 artist)
             song = songs[song].get_text().strip()
@@ -54,22 +54,22 @@ class Spotify:
                 playlist_id = playlist['id']
                 print("Playlist found")
                 return playlist_id
-
         print("Playlist does not exist, creating a new playlist")
         sp.user_playlist_create(user, playlist_name)
+            
         return self.__get_playlist(sp, user, playlist_name)
 
     def __get_track_uri(self, sp, song, artist):
         """
         Searches for song titles and adds them to the playlist
         """
-        results = sp.search(q='track:{} artist:{}'.format(song, artist))
+        results = sp.search(q='{} {}'.format(song, artist))
 
         if len(results['tracks']['items']) == 0:
-            results = sp.search(q='track:{} artist:{}'.format(song + 's', artist))
+            results = sp.search(q='{} {}'.format(song + 's', artist))
         if len(results['tracks']['items']) == 0:
             artist = re.sub(r"(The).*", '', artist)
-            results = sp.search(q='track:{} artist:{}'.format(song, artist))
+            results = sp.search(q='{} {}'.format(song, artist))
 
         for track_name in results['tracks']['items']:
             return track_name['uri']
