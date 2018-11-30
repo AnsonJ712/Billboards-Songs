@@ -28,16 +28,15 @@ class Spotify:
         track_id = []
 
         for song in range(len(songs)):
-            temp = artists[song].get_text().strip()
-            artist = temp
-            artist = re.sub(r"([,*]|\s([X&+x]|(Featuring)|(With)|(And)|(vs))).*",
+            artist = artists[song].get_text().strip()
+            temp_artist = artist
+            temp_artist = re.sub(r"([,*']|\s([X&+x]|(Featuring)|(With)|(And)|(vs))).*",
                 '',
-                artist)
+                temp_artist)
             song = songs[song].get_text().strip()
 
-            if self.__get_track_uri(sp, song, artist) is not None:
-                track_id.append(self.__get_track_uri(sp, song, artist))
-                print("Added " + song + " by " + temp)
+            track_id.append(self.__get_track_uri(sp, song, temp_artist))
+            print("Added " + song + " by " + artist)
 
         sp.user_playlist_replace_tracks(user, playlist_id, track_id)
 
@@ -62,10 +61,7 @@ class Spotify:
         """
         Searches for song titles and adds them to the playlist
         """
-        results = sp.search(q='{} {}'.format(song, artist), type='track,artist')
-
-        if len(results['tracks']['items']) == 0:
-            results = sp.search(q='{}'.format(song), type='track')
+        results = sp.search(q='{}, {}'.format(song, artist), type='track,artist')
 
         for track_name in results['tracks']['items']:
             return track_name['uri']
