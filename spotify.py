@@ -28,16 +28,24 @@ class Spotify:
         track_id = []
 
         for song in range(len(songs)):
+            """
+            Format songs and artists to search through Spotify API
+            """
             artist = artists[song].get_text().strip()
             temp_artist = artist
-            temp_artist = re.sub(r"([,*']|\s([X&+x]|(Featuring)|(With)|(And)|(vs))).*",
+            temp_artist = re.sub(r"([,*']|\s([X&+x]|(\b(Feat)\w+)|(With)|(And)|(vs))).*",
                 '',
                 temp_artist)
+
             song = songs[song].get_text().strip()
+            temp_song = song
+            temp_song = re.sub(r"[()].*",
+                '',
+                temp_song)
 
-            track_id.append(self.__get_track_uri(sp, song, temp_artist))
+            track_id.append(self.__get_track_uri(sp, temp_song, temp_artist))
             print("Added " + song + " by " + artist)
-
+        
         sp.user_playlist_replace_tracks(user, playlist_id, track_id)
 
     def __get_playlist(self, sp, user, playlist_name):
@@ -64,4 +72,8 @@ class Spotify:
         results = sp.search(q='{}, {}'.format(song, artist), type='track,artist')
 
         for track_name in results['tracks']['items']:
-            return track_name['uri']
+            """
+            Adds non-remix version of song
+            """
+            if "Remix" not in track_name['name'] and song in track_name['name']:
+                return track_name['uri']

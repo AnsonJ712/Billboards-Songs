@@ -18,7 +18,7 @@ class Billboard:
         Collects song titles from billboards.com
         """
         chart_name = soup.find(class_='chart-detail-header__chart-name')
-        artists = soup.find_all(class_=['chart-number-one__artist', 'chart-list-item__artist'])
-        songs = soup.find_all(class_=['chart-number-one__title', 'chart-list-item__title-text'])
+        artists = soup.find_all(class_='chart-list-item__artist')
+        songs = soup.find_all(class_='chart-list-item__title-text')
         
         return artists, songs, chart_name
