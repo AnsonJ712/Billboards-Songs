@@ -39,13 +39,12 @@ class Spotify:
 
             song = songs[song].get_text().strip()
             temp_song = song
-            temp_song = re.sub(r"[()].*",
+            temp_song = re.sub(r"([()]|(\d{4})).*",
                 '',
                 temp_song)
 
             track_id.append(self.__get_track_uri(sp, temp_song, temp_artist))
             print("Added " + song + " by " + artist)
-        
         sp.user_playlist_replace_tracks(user, playlist_id, track_id)
 
     def __get_playlist(self, sp, user, playlist_name):
@@ -75,5 +74,12 @@ class Spotify:
             """
             Adds non-remix version of song
             """
-            if "Remix" not in track_name['name'] and song in track_name['name']:
+            if 'Remix' not in track_name['name'] and song.lower().strip() in track_name['name'].lower():
+                for artists in track_name['artists']:
+                    if artist.lower() in artists['name'].lower():
+                        return track_name['uri']
                 return track_name['uri']
+        
+        song = song.split(' ')[0]
+        results = sp.search(q='{}, {}'.format(song, artist), type='track,artist')
+        return results['tracks']['items'][0]['uri']

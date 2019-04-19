@@ -2,3 +2,6 @@ __pycache__/
 .vscode/
 .cache-22lowm2thyomlyic63iohy52a
 .DS_Store
+billboard.pyc
+spotify.pyc
+config.pyc
