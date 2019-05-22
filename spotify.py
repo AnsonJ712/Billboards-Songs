@@ -33,7 +33,7 @@ class Spotify:
             """
             artist = artists[song].get_text().strip()
             temp_artist = artist
-            temp_artist = re.sub(r"([,*']|\s([X&+x]|(\b(Feat)\w+)|(With)|(And)|(vs))).*",
+            temp_artist = re.sub(r"([,*']|\s([X&+x]|(\b(Feat)\w+)|(With)|(And)|(vs)|(Presents))).*",
                 '',
                 temp_artist)
 
@@ -43,7 +43,10 @@ class Spotify:
                 '',
                 temp_song)
 
-            track_id.append(self.__get_track_uri(sp, temp_song, temp_artist))
+            uri = self.__get_track_uri(sp, temp_song, temp_artist)
+
+            if uri is not None:
+                track_id.append(uri)
             print("Added " + song + " by " + artist)
         sp.user_playlist_replace_tracks(user, playlist_id, track_id)
 
@@ -82,4 +85,7 @@ class Spotify:
         
         song = song.split(' ')[0]
         results = sp.search(q='{}, {}'.format(song, artist), type='track,artist')
-        return results['tracks']['items'][0]['uri']
+
+        print(len(results['tracks']['items']))
+        if len(results['tracks']['items']) != 0:
+            return results['tracks']['items'][0]['uri']
