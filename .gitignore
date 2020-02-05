@@ -1,7 +1,3 @@
-__pycache__/
-.vscode/
-.cache-22lowm2thyomlyic63iohy52a
+.idea
 .DS_Store
-billboard.pyc
-spotify.pyc
-config.pyc
+.cache*
